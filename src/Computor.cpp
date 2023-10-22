@@ -34,11 +34,8 @@ void Computor::formatSplit() {
             _equation[i] = "X^1";
         if (isVariable(_equation[i]) >= 0 && (i == 0 || _equation[i - 1] != "*")) {
             _equation.insert(_equation.begin() + i, "*");
-            if (!isFloat(_equation[i - 1])) {
+            if (!isFloat(_equation[i - 1]))
                 _equation.insert(_equation.begin() + i, "1");
-                i++;
-            }
-            i++;
         }
     }
 }
@@ -171,6 +168,7 @@ void Computor::resolveFirstDegree() {
     if (_equation[3] == "-")
         a = INVERSE(a);
     result = (0 - b) / a;
+    result = result == -0 ? result = 0 : result;
     std::cout << "The solution is:\n" << result << "\n";
 }
 
