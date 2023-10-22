@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
         computor.getReduceForm();
         computor.getSolution();
     } catch (std::exception & e) {
-        std::cout << "Error: " << e.what() << "\n";
+        std::cout << "Error: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

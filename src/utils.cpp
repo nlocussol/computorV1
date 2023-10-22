@@ -17,3 +17,9 @@ std::vector<std::string> mysplit(std::string & line, std::string delimiter) {
 	}
 	return (tab);
 }
+
+bool isFloat(std::string & str) {
+	char *endPtr;
+	strtof(str.c_str(), &endPtr);
+	return strlen(endPtr) > 0 ? false : true;
+}

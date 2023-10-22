@@ -1,30 +1,8 @@
 #include "../inc/Computor.hpp"
 
-Computor::Computor()
-{
-    _degree = 0;
-}
+Computor::Computor() {}
 
 Computor::~Computor() {}
-
-void parsStruct(std::vector<int> equationStruct)
-{
-    int i = 0;
-    const int structSize = equationStruct.size();
-    const int format[3] = {NUMBER, MULTIPLICATION, VARIABLE};
-    while (i < structSize)
-    {
-        for (int j = 0; j != 3; j++)
-        {
-            if (i >= structSize || equationStruct[i] != format[j])
-                throw(std::logic_error("Bad format!"));
-            i++;
-        }
-        if (i < structSize && equationStruct[i] != EQUAL && equationStruct[i] != OPERATOR)
-            throw(std::logic_error("Bad format!"));
-        i++;
-    }
-}
 
 int isVariable(std::string &variable)
 {
@@ -37,37 +15,62 @@ int isVariable(std::string &variable)
     return number;
 }
 
+std::string Computor::equationFormatting(std::string & equation){
+    std::stringstream result;
+    for (int i = 0; equation[i]; i++) {
+        if (strchr(SYMBOL, equation[i]))
+            result << " " << equation[i] << " ";
+        else if (i > 0 && equation[i] == 'X' && equation[i - 1] != ' ')
+            result << " " << equation[i];
+        else
+            result << equation[i];
+    }
+    return result.str();
+}
+
+void Computor::formatSplit() {
+    for (ulong i = 0; i < _equation.size(); i++) {
+        if (_equation[i] == "X")
+            _equation[i] = "X^1";
+        if (isVariable(_equation[i]) >= 0 && (i == 0 || _equation[i - 1] != "*")) {
+            _equation.insert(_equation.begin() + i, "*");
+            if (!isFloat(_equation[i - 1])) {
+                _equation.insert(_equation.begin() + i, "1");
+                i++;
+            }
+            i++;
+        }
+    }
+}
+
 void Computor::parsEquation(std::string &equation)
 {
-    char *endPtr;
     int degree;
+    equation = equationFormatting(equation);
     _equation = mysplit(equation, DELIMITER);
-    const int size = _equation.size();
-    std::vector<int> equationStruct;
-
-    for (int i = 0; i < size; i++)
+    formatSplit();
+    for (ulong i = 0; i < _equation.size(); i++)
     {
-        strtof(_equation[i].c_str(), &endPtr);
-        if (!strlen(endPtr))
-            equationStruct.push_back(NUMBER);
-        else if (_equation[i] == "*")
-            equationStruct.push_back(MULTIPLICATION);
-        else if (_equation[i] == "=")
-            equationStruct.push_back(EQUAL);
-        else if (_equation[i] == "-" || _equation[i] == "+")
-            equationStruct.push_back(OPERATOR);
-        else if ((degree = isVariable(_equation[i])) >= 0)
-        {
-            if (degree > _degree)
-                _degree = degree;
-            equationStruct.push_back(VARIABLE);
+        if (isFloat(_equation[i])) continue;
+        else if (_equation[i] == "*") continue;
+        else if (_equation[i] == "=") continue;
+        else if (_equation[i] == "-" || _equation[i] == "+") {
+            if (i > 0 && isFloat(_equation[i - 1])) {
+                _equation.insert(_equation.begin() + i, "X^0");
+                _equation.insert(_equation.begin() + i, "*");
+            }
         }
+        else if ((degree = isVariable(_equation[i])) >= 0)
+            _degree = degree > _degree ? degree : _degree;
         else
             throw(std::logic_error("Bad input: " + _equation[i]));
     }
-    if (std::count(equationStruct.begin(), equationStruct.end(), EQUAL) != 1)
-        throw(std::logic_error("Bad input: an equation must be an equality!"));
-    parsStruct(equationStruct);
+    if (isFloat(_equation[_equation.size() - 1])) {
+        _equation.push_back("*");
+        _equation.push_back("X^0");
+    }
+    if (std::count(_equation.begin(), _equation.end(), "=") != 1)
+        throw(std::logic_error("Bad input: an equation must contain only one equality!"));
 }
 
 void Computor::getReduceForm()
@@ -124,18 +127,19 @@ void Computor::printReduceForm(float *reduceTab) {
     reduceForm << "= 0";
     _reduceForm = reduceForm.str();
     _equation = mysplit(_reduceForm, DELIMITER);
-    specialCases();
     std::cout << "Reduced form: " << _reduceForm << "\n";
-    std::cout << "Polynomial degree: " << _degree << "\n";
+    specialCases();
 }
 
 void Computor::specialCases() {
-    if (_degree == 0 && _equation[0] != "0")
-        throw (std::logic_error("This equation is impossible to solve!"));
-    if (_degree == 2 && _equation[8] == "0")
-        throw (std::logic_error("Not a polynomial second degree equation because by definition :\n\
-    ax2 + bx + c = 0 where 'a', 'b' and 'c' are real numbers with 'a' ≠ 0.\n\
-    Or 'a' equal to 0 !"));
+
+    if (_degree == 2 && _equation[VAR_3] == "0")
+        _degree = 1;
+    if (_degree == 1 && _equation[VAR_2] == "0")
+        _degree = 0;
+    std::cout << "Polynomial degree: " << _degree << "\n";
+    if (_degree == 0 && _equation[VAR_1] != "0")
+        throw (std::logic_error("This equation is impossible!"));
 }
 
 void Computor::getSolution() {
@@ -158,8 +162,12 @@ void Computor::getSolution() {
 
 void Computor::resolveFirstDegree() {
     float result;
-    float b = stof(_equation[0]);
-    float a = stof(_equation[4]);
+    float b = stof(_equation[VAR_1]);
+    float a = stof(_equation[VAR_2]);
+    if (a == 0 && b == 0) {
+        std::cout << "Each real number is a solution.\n";
+        return ;
+    }
     if (_equation[3] == "-")
         a = INVERSE(a);
     result = (0 - b) / a;
@@ -167,9 +175,9 @@ void Computor::resolveFirstDegree() {
 }
 
 void Computor::resolveSecondDegree() {
-    float c = stof(_equation[0]);
-    float b = stof(_equation[4]);
-    float a = stof(_equation[8]);
+    float c = stof(_equation[VAR_1]);
+    float b = stof(_equation[VAR_2]);
+    float a = stof(_equation[VAR_3]);
     if (_equation[3] == "-")
         b = INVERSE(b);
     if (_equation[7] == "-")
