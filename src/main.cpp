@@ -3,7 +3,7 @@
 int main(int argc, char const *argv[])
 {
     if (argc != 2) {
-        std::cout << "./computor [polynomial equation]\n";
+        std::cout << "Usage: ./computor [polynomial equation]\n";
         return EXIT_FAILURE;
     }
     try {
@@ -16,6 +16,5 @@ int main(int argc, char const *argv[])
         std::cout << "Error: " << e.what() << "\n";
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }

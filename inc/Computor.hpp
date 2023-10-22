@@ -32,16 +32,16 @@ private:
     std::string _reduceForm;
     void resolveFirstDegree();
     void resolveSecondDegree();
+    void specialCases();
+    float getReduceNumber(int head, float result, bool equal);
+    void printReduceForm(float *reduceTab);
 
 public:
     Computor();
     ~Computor();
     void parsEquation(std::string &equation);
-    float getReduceNumber(int head, float result, bool equal);
-    void printReduceForm(float *reduceTab);
     void getReduceForm();
     void getSolution();
-
 };
 
 std::vector<std::string> mysplit(std::string &, std::string delimiter);

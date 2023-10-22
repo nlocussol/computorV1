@@ -124,10 +124,18 @@ void Computor::printReduceForm(float *reduceTab) {
     reduceForm << "= 0";
     _reduceForm = reduceForm.str();
     _equation = mysplit(_reduceForm, DELIMITER);
-    if (_degree == 0 && _equation[0] != "0")
-        throw (std::logic_error("This equation is impossible to solve!"));
+    specialCases();
     std::cout << "Reduced form: " << _reduceForm << "\n";
     std::cout << "Polynomial degree: " << _degree << "\n";
+}
+
+void Computor::specialCases() {
+    if (_degree == 0 && _equation[0] != "0")
+        throw (std::logic_error("This equation is impossible to solve!"));
+    if (_degree == 2 && _equation[8] == "0")
+        throw (std::logic_error("Not a polynomial second degree equation because by definition :\n\
+    ax2 + bx + c = 0 where 'a', 'b' and 'c' are real numbers with 'a' ≠ 0.\n\
+    Or 'a' equal to 0 !"));
 }
 
 void Computor::getSolution() {
@@ -150,24 +158,21 @@ void Computor::getSolution() {
 
 void Computor::resolveFirstDegree() {
     float result;
-    std::string signA = _equation[3];
     float b = stof(_equation[0]);
     float a = stof(_equation[4]);
-    if (signA == "-")
+    if (_equation[3] == "-")
         a = INVERSE(a);
     result = (0 - b) / a;
     std::cout << "The solution is:\n" << result << "\n";
 }
 
 void Computor::resolveSecondDegree() {
-    std::string signB = _equation[3];
-    std::string signA = _equation[7];
     float c = stof(_equation[0]);
     float b = stof(_equation[4]);
     float a = stof(_equation[8]);
-    if (signB == "-")
+    if (_equation[3] == "-")
         b = INVERSE(b);
-    if (signA == "-")
+    if (_equation[7] == "-")
         a = INVERSE(a);
     _discriminant = pow(b, 2) - 4 * a * c;
     if (_discriminant > 0) {
