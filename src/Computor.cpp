@@ -15,10 +15,16 @@ int isVariable(std::string &variable)
     return number;
 }
 
+bool isOperator(std::string & str) {
+    if (str == "=" || str == "+"
+        || str == "-" || str == "*")
+        return true;
+    return false;
+}
 std::string Computor::equationFormatting(std::string & equation){
     std::stringstream result;
     for (int i = 0; equation[i]; i++) {
-        if (strchr(SYMBOL, equation[i]))
+        if (i > 0 && strchr(SYMBOL, equation[i]))
             result << " " << equation[i] << " ";
         else if (i > 0 && equation[i] == 'X' && equation[i - 1] != ' ')
             result << " " << equation[i];
@@ -34,9 +40,25 @@ void Computor::formatSplit() {
             _equation[i] = "X^1";
         if (isVariable(_equation[i]) >= 0 && (i == 0 || _equation[i - 1] != "*")) {
             _equation.insert(_equation.begin() + i, "*");
-            if (!isFloat(_equation[i - 1]))
+            if (i < 1 || !isFloat(_equation[i - 1]))
                 _equation.insert(_equation.begin() + i, "1");
         }
+    }
+}
+
+void Computor::checkStructure() {
+    int eqSize = _equation.size();
+    for (int i = 0; i < eqSize; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (i < eqSize && j == 0 && isFloat(_equation[i])) i++;
+            else if (i < eqSize && j == 1 && _equation[i] == "*") i++;
+            else if (i < eqSize && j == 2 && isVariable(_equation[i]) >= 0) i++;
+            else throw(std::logic_error("Bad input: " + _equation[i]));
+        }
+        if (i < eqSize - 1 && _equation[i] != "=" && _equation[i] != "+" && _equation[i] != "-")
+            throw(std::logic_error("Bad format: " + _equation[i]));
+        else if (i == eqSize - 1 && (_equation[i] == "=" || _equation[i] == "+" || _equation[i] == "-"))
+            throw(std::logic_error("Bad format: " + _equation[i]));
     }
 }
 
@@ -48,10 +70,13 @@ void Computor::parsEquation(std::string &equation)
     formatSplit();
     for (ulong i = 0; i < _equation.size(); i++)
     {
-        if (isFloat(_equation[i])) continue;
-        else if (_equation[i] == "*") continue;
-        else if (_equation[i] == "=") continue;
-        else if (_equation[i] == "-" || _equation[i] == "+") {
+        if (isFloat(_equation[i]) || _equation[i] == "*") continue;
+        else if (_equation[i] == "-" || _equation[i] == "+" || _equation[i] == "=") {
+            if (i > 0 && i + 1 < _equation.size()&& _equation[i - 1] == "="
+                && (_equation[i] == "+" || _equation[i] == "-" )) {
+                _equation[i + 1] = _equation[i] + _equation[i + 1];
+                _equation.erase(_equation.begin() + i);
+            }            
             if (i > 0 && isFloat(_equation[i - 1])) {
                 _equation.insert(_equation.begin() + i, "X^0");
                 _equation.insert(_equation.begin() + i, "*");
@@ -68,6 +93,7 @@ void Computor::parsEquation(std::string &equation)
     }
     if (std::count(_equation.begin(), _equation.end(), "=") != 1)
         throw(std::logic_error("Bad input: an equation must contain only one equality!"));
+    checkStructure();
 }
 
 void Computor::getReduceForm()
@@ -115,6 +141,8 @@ void Computor::printReduceForm(float *reduceTab) {
         reduceNumber = reduceTab[degree];
         if (degree == 0)
             reduceForm << reduceNumber;
+        else if (reduceNumber == 0)
+            continue;
         else if (reduceNumber > 0)
             reduceForm << "+ " << reduceNumber;
         else
@@ -130,9 +158,9 @@ void Computor::printReduceForm(float *reduceTab) {
 
 void Computor::specialCases() {
 
-    if (_degree == 2 && _equation[VAR_3] == "0")
+    if (_degree == 2 && (_equation.size() < VAR_3 || _equation[VAR_3] == "0"))
         _degree = 1;
-    if (_degree == 1 && _equation[VAR_2] == "0")
+    if (_degree == 1 && (_equation.size() < VAR_2 || _equation[VAR_2] == "0"))
         _degree = 0;
     std::cout << "Polynomial degree: " << _degree << "\n";
     if (_degree == 0 && _equation[VAR_1] != "0")
@@ -161,10 +189,6 @@ void Computor::resolveFirstDegree() {
     float result;
     float b = stof(_equation[VAR_1]);
     float a = stof(_equation[VAR_2]);
-    if (a == 0 && b == 0) {
-        std::cout << "Each real number is a solution.\n";
-        return ;
-    }
     if (_equation[3] == "-")
         a = INVERSE(a);
     result = (0 - b) / a;
@@ -181,18 +205,40 @@ void Computor::resolveSecondDegree() {
     if (_equation[7] == "-")
         a = INVERSE(a);
     _discriminant = pow(b, 2) - 4 * a * c;
+    // std::cout << "Discriminant: " << _discriminant << "\n";
     if (_discriminant > 0) {
         std::cout << "Discriminant is strictly positive, the two solutions are:\n";
-        std::cout << (-b - sqrt(_discriminant)) / (2 * a) << "\n";
-        std::cout << (-b + sqrt(_discriminant)) / (2 * a) << "\n";
+        std::cout << (-b - sqrt(_discriminant)) / (2 * a) << " ";
+        std::cout << "Fraction: " << bestFraction(-b - sqrt(_discriminant), 2 * a) <<"\n";
+        std::cout << (-b + sqrt(_discriminant)) / (2 * a) << " ";
+        std::cout << "Fraction: " << bestFraction(-b + sqrt(_discriminant), 2 * a) <<"\n";
     }
     else if (_discriminant == 0) {
         std::cout << "Discriminant is equal to 0, the only solution is:\n";
         std::cout << -b / (2 * a);
+        std::cout << " Fraction" << bestFraction(-b + sqrt(_discriminant), 2 * a) << "\n";
     }
     else {
         std::cout << "Discriminant is strictly negative, the two complex solutions are:\n";
-        std::cout << -b / (2 * a) << " - i" << sqrt(ABS(_discriminant)) / (2 * a) << "\n";
-        std::cout << -b / (2 * a) << " + i" << sqrt(ABS(_discriminant)) / (2 * a) << "\n";
+        std::cout << -b / (2 * a) << " - i" << sqrt(ABS(_discriminant)) / (2 * a) << " ";
+        std::cout << "Fraction: " << bestFraction(-b / (2 * a), (2 * a)) << " - " << bestFraction(sqrt(ABS(_discriminant)), (2 * a)) << "i\n";
+        std::cout << -b / (2 * a) << " + i" << sqrt(ABS(_discriminant)) / (2 * a) << " ";
+        std::cout << "Fraction: " << bestFraction(-b / (2 * a), (2 * a)) << " + " << bestFraction(sqrt(ABS(_discriminant)), (2 * a)) << "i\n";
     }
+}
+
+std::string Computor::bestFraction(float numerator, float quotient) {
+    std::stringstream result;
+    if (numerator - int(numerator) != 0 || quotient - int(quotient) != 0)
+        result << numerator << "/" << quotient;
+    else {
+        int divider = numerator > quotient ? quotient : numerator;
+        for (int i = divider; i > 0; i--) {
+            if (int(numerator) % divider == 0 && int(quotient) % divider == 0) {
+                result << numerator /divider << "/" << quotient / divider;
+                break ;
+            }
+        }
+    }
+    return result.str();
 }

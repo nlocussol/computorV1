@@ -14,7 +14,7 @@
 #define NOT_VARIABLE -1
 #define ABS(X) (X * ((X > 0) - (X < 0)))
 #define INVERSE(X) (X * -1)
-#define VAR_1 0 
+#define VAR_1 0
 #define VAR_2 4
 #define VAR_3 8
 
@@ -30,8 +30,10 @@ private:
     void specialCases();
     float getReduceNumber(int head, float result, bool equal);
     void printReduceForm(float *reduceTab);
-    std::string equationFormatting(std::string & equation);
+    std::string equationFormatting(std::string &equation);
     void formatSplit();
+    void checkStructure();
+    std::string bestFraction(float numerator, float quotient);
 
 public:
     Computor();
@@ -42,6 +44,6 @@ public:
 };
 
 std::vector<std::string> mysplit(std::string &, std::string delimiter);
-bool isFloat(std::string & str);
+bool isFloat(std::string &str);
 
 #endif
