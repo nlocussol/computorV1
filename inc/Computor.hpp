@@ -27,6 +27,7 @@ private:
     float _discriminant;
     std::vector<std::string> _equation;
     std::string _reduceForm;
+
     void resolveFirstDegree();
     void resolveSecondDegree();
     void specialCases();

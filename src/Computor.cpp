@@ -119,21 +119,23 @@ float Computor::getReduceNumber(int head, float result, bool equal)
 
 void Computor::printReduceForm(float *reduceTab) {
     float reduceNumber;
-    std::stringstream reduceForm;
-    for (int degree = 0; degree <= _degree; degree++) {
+    bool erase = false;
+    std::stringstream buff;
+    for (int degree = _degree; degree >= 0; degree--) {
+        buff.str("");
         reduceNumber = reduceTab[degree];
+        if (reduceNumber == 0 && !erase && degree != 0) continue;
+        else erase = true;
         if (degree == 0)
-            reduceForm << reduceNumber;
-        // else if (reduceNumber == 0)
-            // continue;
-        else if (reduceNumber > 0)
-            reduceForm << "+ " << reduceNumber;
+            buff << reduceNumber;
+        else if (reduceNumber >= 0)
+            buff << "+ " << reduceNumber;
         else
-            reduceForm << "- " << ABS(reduceNumber);
-        reduceForm << " * X^" << degree << " ";
+            buff << "- " << ABS(reduceNumber);
+        buff << " * X^" << degree << " ";
+        _reduceForm = buff.str() + _reduceForm;
     }
-    reduceForm << "= 0";
-    _reduceForm = reduceForm.str();
+    _reduceForm += "= 0";
     _equation = mysplit(_reduceForm, DELIMITER);
     std::cout << "Reduced form: " << _reduceForm << "\n";
     specialCases();
