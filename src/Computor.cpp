@@ -4,23 +4,6 @@ Computor::Computor() {}
 
 Computor::~Computor() {}
 
-int isVariable(std::string &variable)
-{
-    if (variable[0] != 'X' || variable[1] != '^')
-        return NOT_VARIABLE;
-    char *endPtr;
-    int number = strtod(&variable.c_str()[2], &endPtr);
-    if (strlen(endPtr))
-        return NOT_VARIABLE;
-    return number;
-}
-
-bool isOperator(std::string & str) {
-    if (str == "=" || str == "+"
-        || str == "-" || str == "*")
-        return true;
-    return false;
-}
 std::string Computor::equationFormatting(std::string & equation){
     std::stringstream result;
     for (int i = 0; equation[i]; i++) {
@@ -141,8 +124,8 @@ void Computor::printReduceForm(float *reduceTab) {
         reduceNumber = reduceTab[degree];
         if (degree == 0)
             reduceForm << reduceNumber;
-        else if (reduceNumber == 0)
-            continue;
+        // else if (reduceNumber == 0)
+            // continue;
         else if (reduceNumber > 0)
             reduceForm << "+ " << reduceNumber;
         else
@@ -193,7 +176,9 @@ void Computor::resolveFirstDegree() {
         a = INVERSE(a);
     result = (0 - b) / a;
     result = result == -0 ? result = 0 : result;
-    std::cout << "The solution is:\n" << result << "\n";
+    std::cout << "The solution is:\n" << result << " or ";
+    printFraction(0 - b, a);
+    std::cout << "\n";
 }
 
 void Computor::resolveSecondDegree() {
@@ -205,40 +190,52 @@ void Computor::resolveSecondDegree() {
     if (_equation[7] == "-")
         a = INVERSE(a);
     _discriminant = pow(b, 2) - 4 * a * c;
-    // std::cout << "Discriminant: " << _discriminant << "\n";
+    std::cout << "Discriminant: " << _discriminant << "\n";
+    discriminantCase(a, b);
+}
+
+void Computor::discriminantCase(float a, float b ) {
     if (_discriminant > 0) {
         std::cout << "Discriminant is strictly positive, the two solutions are:\n";
-        std::cout << (-b - sqrt(_discriminant)) / (2 * a) << " ";
-        std::cout << "Fraction: " << bestFraction(-b - sqrt(_discriminant), 2 * a) <<"\n";
-        std::cout << (-b + sqrt(_discriminant)) / (2 * a) << " ";
-        std::cout << "Fraction: " << bestFraction(-b + sqrt(_discriminant), 2 * a) <<"\n";
+        std::cout << (-b - sqrt(_discriminant)) / (2 * a) << " or ";
+        printFraction(-b - sqrt(_discriminant), 2 * a);
+        std::cout << "\n";
+        std::cout << (-b + sqrt(_discriminant)) / (2 * a) << " or ";
+        printFraction(-b + sqrt(_discriminant), 2 * a);
+        std::cout << "\n";
     }
     else if (_discriminant == 0) {
         std::cout << "Discriminant is equal to 0, the only solution is:\n";
-        std::cout << -b / (2 * a);
-        std::cout << " Fraction" << bestFraction(-b + sqrt(_discriminant), 2 * a) << "\n";
+        std::cout << -b / (2 * a) << " or ";
+        printFraction(-b + sqrt(_discriminant), 2 * a);
+        std::cout << "\n";
     }
     else {
         std::cout << "Discriminant is strictly negative, the two complex solutions are:\n";
-        std::cout << -b / (2 * a) << " - i" << sqrt(ABS(_discriminant)) / (2 * a) << " ";
-        std::cout << "Fraction: " << bestFraction(-b / (2 * a), (2 * a)) << " - " << bestFraction(sqrt(ABS(_discriminant)), (2 * a)) << "i\n";
-        std::cout << -b / (2 * a) << " + i" << sqrt(ABS(_discriminant)) / (2 * a) << " ";
-        std::cout << "Fraction: " << bestFraction(-b / (2 * a), (2 * a)) << " + " << bestFraction(sqrt(ABS(_discriminant)), (2 * a)) << "i\n";
+        std::cout << -b / (2 * a) << " - " << sqrt(ABS(_discriminant)) / (2 * a) << "i or ";
+        printFraction(-b / (2 * a), (2 * a));
+        std::cout << " - ";
+        printFraction(sqrt(ABS(_discriminant)), (2 * a));
+        std::cout << "i\n";
+        std::cout << -b / (2 * a) << " + " << sqrt(ABS(_discriminant)) / (2 * a) << "i or ";
+        printFraction(-b / (2 * a), (2 * a)); 
+        std::cout << " + ";
+        printFraction(sqrt(ABS(_discriminant)), (2 * a));
+        std::cout << "i\n";
     }
 }
 
-std::string Computor::bestFraction(float numerator, float quotient) {
-    std::stringstream result;
-    if (numerator - int(numerator) != 0 || quotient - int(quotient) != 0)
-        result << numerator << "/" << quotient;
-    else {
-        int divider = numerator > quotient ? quotient : numerator;
-        for (int i = divider; i > 0; i--) {
-            if (int(numerator) % divider == 0 && int(quotient) % divider == 0) {
-                result << numerator /divider << "/" << quotient / divider;
-                break ;
-            }
-        }
-    }
-    return result.str();
+void Computor::printFraction(float numerator, float quotient) {
+    int mulNu = pow(10, countDecimal(numerator));
+    numerator *= mulNu;
+    int nuGCD = GCD(numerator, mulNu);
+    int mulQu = pow(10, countDecimal(quotient));
+    quotient *= mulQu;
+    int quGCD = GCD(numerator, mulQu);
+
+    numerator =  int((numerator / nuGCD) * (mulQu / quGCD));
+    quotient =  int((mulNu / nuGCD) * (quotient / quGCD));
+    int gcd = GCD(numerator, quotient);
+    std::cout << std::fixed << std::setprecision(0) << numerator / gcd << " / " << quotient / gcd;
+    return ;
 }

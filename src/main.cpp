@@ -6,9 +6,9 @@ int main(int argc, char const *argv[])
         std::cout << "Usage: ./computor [polynomial equation]\n";
         return EXIT_FAILURE;
     }
+    std::string equation(argv[1]);
+    Computor computor;
     try {
-        std::string equation(argv[1]);
-        Computor computor;
         computor.parsEquation(equation);
         computor.getReduceForm();
         computor.getSolution();

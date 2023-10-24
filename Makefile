@@ -3,7 +3,7 @@ MAKEFLAGS += -j
 CXX		=	c++
 NAME 	= 	computor
 SRC 	=	main.cpp Computor.cpp utils.cpp
-HEADER	=	inc/Computor.hpp
+HEADER	=	inc/Computor.hpp inc/utils.hpp
 			
 OBJS	=	$(addprefix obj/, $(SRC:.cpp=.o))
 CXXFLAGS=	-Wall -Wextra --std=c++17 -g

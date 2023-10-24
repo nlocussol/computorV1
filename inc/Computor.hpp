@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <sstream>
 #include <cmath>
+#include <iomanip>
+#include "utils.hpp"
 
 #define DELIMITER "\n\r\t "
 #define SYMBOL "+-*="
@@ -33,8 +35,9 @@ private:
     std::string equationFormatting(std::string &equation);
     void formatSplit();
     void checkStructure();
-    std::string bestFraction(float numerator, float quotient);
-
+    void printFraction(float numerator, float quotient);
+    void discriminantCase(float a, float b);
+    
 public:
     Computor();
     ~Computor();
@@ -43,7 +46,6 @@ public:
     void getSolution();
 };
 
-std::vector<std::string> mysplit(std::string &, std::string delimiter);
-bool isFloat(std::string &str);
+
 
 #endif
