@@ -1,5 +1,5 @@
 #ifndef UTILS_HPP
-#define UTILS_HPP
+# define UTILS_HPP
 #include "Computor.hpp"
 
 std::vector<std::string> mysplit(std::string &, std::string delimiter);

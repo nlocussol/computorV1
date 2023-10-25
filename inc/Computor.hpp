@@ -10,6 +10,9 @@
 #include <cmath>
 #include <iomanip>
 #include "utils.hpp"
+#include "plot.hpp"
+#include "../matplotlib-cpp/matplotlibcpp.h"
+namespace plt = matplotlibcpp;
 
 #define DELIMITER "\n\r\t "
 #define SYMBOL "+-*="
@@ -37,7 +40,7 @@ private:
     void formatSplit();
     void checkStructure();
     void printFraction(float numerator, float quotient);
-    void discriminantCase(float a, float b);
+    void discriminantCase(float a, float b, float c);
     
 public:
     Computor();

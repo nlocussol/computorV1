@@ -52,7 +52,6 @@ int countDecimal(float number) {
     return 0;
 }
 
-
 int GCD(int a, int b) {
     while (b != 0) {
         int temp = b;
@@ -61,3 +60,4 @@ int GCD(int a, int b) {
     }
     return a;
 }
+

@@ -181,6 +181,7 @@ void Computor::resolveFirstDegree() {
     std::cout << "The solution is:\n" << result << " or ";
     printFraction(0 - b, a);
     std::cout << "\n";
+    plotFirstDegree(a, b, result);
 }
 
 void Computor::resolveSecondDegree() {
@@ -193,10 +194,10 @@ void Computor::resolveSecondDegree() {
         a = INVERSE(a);
     _discriminant = pow(b, 2) - 4 * a * c;
     std::cout << "Discriminant: " << _discriminant << "\n";
-    discriminantCase(a, b);
+    discriminantCase(a, b, c);
 }
 
-void Computor::discriminantCase(float a, float b ) {
+void Computor::discriminantCase(float a, float b, float c) {
     if (_discriminant > 0) {
         std::cout << "Discriminant is strictly positive, the two solutions are:\n";
         std::cout << (-b - sqrt(_discriminant)) / (2 * a) << " or ";
@@ -215,16 +216,17 @@ void Computor::discriminantCase(float a, float b ) {
     else {
         std::cout << "Discriminant is strictly negative, the two complex solutions are:\n";
         std::cout << -b / (2 * a) << " - " << sqrt(ABS(_discriminant)) / (2 * a) << "i or ";
-        printFraction(-b / (2 * a), (2 * a));
+        printFraction(-b, (2 * a));
         std::cout << " - ";
         printFraction(sqrt(ABS(_discriminant)), (2 * a));
         std::cout << "i\n";
         std::cout << -b / (2 * a) << " + " << sqrt(ABS(_discriminant)) / (2 * a) << "i or ";
-        printFraction(-b / (2 * a), (2 * a)); 
+        printFraction(-b, (2 * a)); 
         std::cout << " + ";
         printFraction(sqrt(ABS(_discriminant)), (2 * a));
         std::cout << "i\n";
     }
+    plotSecondDegree(a, b, c);
 }
 
 void Computor::printFraction(float numerator, float quotient) {
@@ -235,9 +237,13 @@ void Computor::printFraction(float numerator, float quotient) {
     quotient *= mulQu;
     int quGCD = GCD(numerator, mulQu);
 
+    std::streamsize precision = std::cout.precision();
     numerator =  int((numerator / nuGCD) * (mulQu / quGCD));
     quotient =  int((mulNu / nuGCD) * (quotient / quGCD));
     int gcd = GCD(numerator, quotient);
     std::cout << std::fixed << std::setprecision(0) << numerator / gcd << " / " << quotient / gcd;
+    std::cout.unsetf(std::ios_base::fixed);
+    std::cout.precision(precision);
     return ;
 }
+
