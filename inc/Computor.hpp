@@ -11,7 +11,7 @@
 #include <iomanip>
 #include "utils.hpp"
 #include "plot.hpp"
-#include "../matplotlib-cpp/matplotlibcpp.h"
+#include "matplotlibcpp.h"
 namespace plt = matplotlibcpp;
 
 #define DELIMITER "\n\r\t "

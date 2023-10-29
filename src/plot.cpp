@@ -1,9 +1,13 @@
 #include "../inc/Computor.hpp"
 
 void plotSecondDegree(float a, float b, float c) {
+    #ifndef PLOT
+        return ;
+    #endif
+    
     std::vector<double> x;
     std::vector<double> vline_x;
-    for (double i = -10.0; i <= 10.0; i += 0.1) {
+    for (double i = -PLOT_LENGTH; i <= PLOT_LENGTH; i += 0.1) {
         x.push_back(i);
         vline_x.push_back(0.0);
     }
@@ -19,9 +23,13 @@ void plotSecondDegree(float a, float b, float c) {
 }
 
 void plotFirstDegree(float a, float b, float result) {
+    #ifndef PLOT
+        return ;
+    #endif
+
     std::vector<double> x;
     std::vector<double> vline_x;
-    for (double i = result - 10.0; i <= result + 10.0; i += 0.1) {
+    for (double i = result - PLOT_LENGTH; i <= result + PLOT_LENGTH; i += 0.1) {
         x.push_back(i);
         vline_x.push_back(0.0);
     }
