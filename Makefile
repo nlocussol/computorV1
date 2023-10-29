@@ -34,4 +34,4 @@ re: fclean
 plotre: fclean
 	@make plot
 
-.PHONY: all plot fclean clean re
+.PHONY: all plot plotre fclean clean re
