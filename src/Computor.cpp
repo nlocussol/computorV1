@@ -11,8 +11,11 @@ Computor::~Computor()
 std::string Computor::equationFormatting(std::string &equation)
 {
     std::stringstream result;
+    std::string str_value;
     for (int i = 0; equation[i]; i++)
     {
+        // if (i > 0 && equation[i - 1] == '^' && strchr(SYMBOL, equation[i]))
+        //     throw(std::logic_error("Bad format: " + equation + ": cannot have a symbol after exponant '^'"));
         if (i > 0 && strchr(SYMBOL, equation[i]))
             result << " " << equation[i] << " ";
         else if (i > 0 && equation[i] == 'X' && equation[i - 1] != ' ')
@@ -20,7 +23,10 @@ std::string Computor::equationFormatting(std::string &equation)
         else
             result << equation[i];
     }
-    return result.str();
+    str_value = result.str();
+    if (str_value.find(" X^ ") != std::string::npos)
+        throw(std::logic_error("Bad input: " + equation));
+    return str_value;
 }
 
 void Computor::formatSplit()
