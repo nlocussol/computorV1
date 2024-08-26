@@ -24,7 +24,7 @@ int isVariable(std::string &variable)
         return NOT_VARIABLE;
     char *endPtr;
     int number = strtod(&variable.c_str()[2], &endPtr);
-    if (strlen(endPtr))
+    if (strlen(endPtr) || number < 0 || number > 65535)
         return NOT_VARIABLE;
     return number;
 }

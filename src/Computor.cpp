@@ -146,7 +146,8 @@ void Computor::printReduceForm(float *reduceTab)
     {
         buff.str("");
         reduceNumber = reduceTab[degree];
-        if (reduceNumber == 0 && !erase && degree != 0)
+        // if (reduceNumber == 0 && !erase && degree != 0)
+        if (reduceNumber == 0 && degree != 0)
             continue;
         else
             erase = true;

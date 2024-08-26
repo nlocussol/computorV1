@@ -7,6 +7,10 @@ int main(int argc, char const *argv[])
         return EXIT_FAILURE;
     }
     std::string equation(argv[1]);
+    if (equation.empty()) {
+        std::cout << "Error: empty input!\n";
+        return EXIT_FAILURE;
+    }
     Computor computor;
     try {
         computor.parsEquation(equation);
