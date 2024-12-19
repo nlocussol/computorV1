@@ -20,6 +20,7 @@ void plotSecondDegree(float a, float b, float c) {
     plt::xlabel("x");
     plt::ylabel("y");
     plt::show();
+    Py_Finalize();
 }
 
 void plotFirstDegree(float a, float b, float result) {
@@ -42,4 +43,5 @@ void plotFirstDegree(float a, float b, float result) {
     plt::xlabel("x");
     plt::ylabel("y");
     plt::show();
+    Py_Finalize();
 }

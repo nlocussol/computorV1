@@ -23,7 +23,7 @@ int isVariable(std::string &variable)
     if (variable[0] != 'X' || variable[1] != '^')
         return NOT_VARIABLE;
     char *endPtr;
-    int number = strtod(&variable.c_str()[2], &endPtr);
+    int number = strtol(&variable.c_str()[2], &endPtr, 10);
     if (strlen(endPtr) || number < 0 || number > 65535)
         return NOT_VARIABLE;
     return number;

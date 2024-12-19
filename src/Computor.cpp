@@ -14,8 +14,6 @@ std::string Computor::equationFormatting(std::string &equation)
     std::string str_value;
     for (int i = 0; equation[i]; i++)
     {
-        // if (i > 0 && equation[i - 1] == '^' && strchr(SYMBOL, equation[i]))
-        //     throw(std::logic_error("Bad format: " + equation + ": cannot have a symbol after exponant '^'"));
         if (i > 0 && strchr(SYMBOL, equation[i]))
             result << " " << equation[i] << " ";
         else if (i > 0 && equation[i] == 'X' && equation[i - 1] != ' ')
@@ -152,9 +150,12 @@ void Computor::printReduceForm(float *reduceTab)
     {
         buff.str("");
         reduceNumber = reduceTab[degree];
-        // if (reduceNumber == 0 && !erase && degree != 0)
-        if (reduceNumber == 0 && degree != 0)
+        // if (reduceNumber == 0 && degree > 2) 
+        if (reduceNumber == 0 && !erase && degree != 0)
+        {
+            _degree = degree - 1;
             continue;
+        }
         else
             erase = true;
         if (degree == 0)
